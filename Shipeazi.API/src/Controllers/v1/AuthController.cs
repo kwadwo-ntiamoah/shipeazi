@@ -74,7 +74,7 @@ namespace Shipeazi.API.src.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [EndpointSummary("Complete user profile")]
         [EndpointDescription("Allows an authenticated user to complete their profile by providing additional information such as display name, address, and other personal details. Requires a valid access token.")]
-        [Tags("Authentication", "User Profile")]
+        [Tags("Authentication")]
         public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileRequest request, CancellationToken cancellationToken)
         {
             var userId = GetAuthenticatedUserId();
