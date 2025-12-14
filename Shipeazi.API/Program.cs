@@ -13,6 +13,8 @@ builder.Services.RegisterStartupExtensions(builder.Configuration);
 
 var app = builder.Build();
 
+app.Urls.Add(builder.Configuration["ASPNETCORE_URLS"] ?? "http://localhost:5000");
+
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
