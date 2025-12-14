@@ -1,0 +1,54 @@
+name: CI/CD - Shipeazi API
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+
+jobs:
+  build-and-deploy:
+    if: github.event.pull_request.merged == true || github.ref == 'refs/heads/development'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Publish
+      run: |
+        dotnet publish src/Shipeazi.API \
+        -c Release \
+        -o publish
+
+    - name: Deploy via SSH
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "publish/*"
+        target: ${{ secrets.APP_PATH }}
+
+    - name: Restart API
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          sudo systemctl restart shipeazi-api
