@@ -31,7 +31,7 @@ jobs:
 
     - name: Publish
       run: |
-        dotnet publish src/Shipeazi.API \
+        dotnet publish Shipeazi.API \
         -c Release \
         -o publish
 
