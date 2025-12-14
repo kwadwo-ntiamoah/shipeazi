@@ -18,7 +18,9 @@ app.Urls.Add(builder.Configuration["ASPNETCORE_URLS"] ?? "http://localhost:5000"
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var enableScalar = builder.Configuration.GetValue<bool>("ApiDocumentation:EnableScalar", false);
+
+if (enableScalar || app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
