@@ -5,6 +5,7 @@ using Orchestrix.Mediator;
 using Shipeazi.API.src.DTOs.Requests;
 using Shipeazi.API.src.DTOs.Responses;
 using Shipeazi.Application.src.Commands;
+using Microsoft.AspNetCore.Http;
 
 namespace Shipeazi.API.src.Controllers.v1
 {
@@ -14,6 +15,9 @@ namespace Shipeazi.API.src.Controllers.v1
         [HttpPost("otp"), MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(RequestOtpResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [EndpointSummary("Request OTP for authentication")]
+        [EndpointDescription("Sends a one-time password (OTP) to the provided email or phone number for authentication purposes. The OTP will be valid for a limited time and can be used to authenticate the user.")]
+        [Tags("Authentication")]
         public async Task<IActionResult> RequestOtp([FromBody] RequestOtpRequest request, CancellationToken cancellationToken)
         {
             var command = mapper.Map<RequestOtpCommand>(request);
@@ -29,6 +33,9 @@ namespace Shipeazi.API.src.Controllers.v1
         [HttpPost, MapToApiVersion("1.0")]
         [ProducesResponseType(typeof(AuthenticateResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [EndpointSummary("Authenticate user with OTP")]
+        [EndpointDescription("Authenticates a user by verifying the OTP code sent to their email or phone number. Returns access and refresh tokens upon successful authentication.")]
+        [Tags("Authentication")]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request, CancellationToken cancellationToken)
         {
             var command = mapper.Map<AuthenticateCommand>(request);
@@ -45,6 +52,9 @@ namespace Shipeazi.API.src.Controllers.v1
         [ProducesResponseType(typeof(RefreshTokenResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [EndpointSummary("Refresh access token")]
+        [EndpointDescription("Generates a new access token using a valid refresh token. This allows users to maintain their session without re-authenticating when their access token expires.")]
+        [Tags("Authentication")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             var command = mapper.Map<RefreshTokenCommand>(request);
@@ -62,6 +72,9 @@ namespace Shipeazi.API.src.Controllers.v1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [EndpointSummary("Complete user profile")]
+        [EndpointDescription("Allows an authenticated user to complete their profile by providing additional information such as display name, address, and other personal details. Requires a valid access token.")]
+        [Tags("Authentication", "User Profile")]
         public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileRequest request, CancellationToken cancellationToken)
         {
             var userId = GetAuthenticatedUserId();
