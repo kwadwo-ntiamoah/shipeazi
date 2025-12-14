@@ -1,0 +1,92 @@
+@HostAddress = http://localhost:5175
+
+###############################################
+# Shipeazi - Passwordless Authentication
+# 
+# Simple & Secure: Phone + OTP Only!
+# No passwords to remember or forget!
+###############################################
+
+### 1. Request OTP
+# Works for both registration AND login
+# - New user? Purpose: "registration"
+# - Returning user? Purpose: "login"
+POST {{HostAddress}}/api/v1/auth/otp
+Content-Type: application/json
+
+{
+  "phoneNumber": "0540609437",
+  "countryCode": "+233",
+  "purpose": "login"
+}
+
+### 2. Authenticate (Login OR Register)
+# One endpoint for everything!
+# - New user → Automatically creates account
+# - Existing user → Logs them in
+# Check the OTP in console logs
+POST {{HostAddress}}/api/v1/auth
+Content-Type: application/json
+
+{
+  "phoneNumber": "0540609437",
+  "countryCode": "+233",
+  "otpCode": "310547"
+}
+
+### 3. Refresh Token
+# When access token expires (15 min), get new tokens
+POST {{HostAddress}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "PASTE_YOUR_REFRESH_TOKEN_HERE"
+}
+
+### 4. Complete Profile (Authenticated)
+# Add display name and address to generate ShipeaziAddress
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+
+POST {{HostAddress}}/api/v1/auth/profile/complete
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "displayName": "John Doe",
+  "email": "john.doe@example.com",
+  "street": "123 Main Street",
+  "city": "Accra",
+  "state": "Greater Accra",
+  "postalCode": "00233",
+  "country": "Ghana"
+}
+
+###############################################
+# HOW IT WORKS
+###############################################
+
+# 📱 FIRST TIME (Registration):
+# 1. Request OTP (purpose: "registration")
+# 2. Check console for 6-digit code
+# 3. Authenticate with OTP
+# 4. Account created + logged in!
+
+# 🔄 NEXT TIME (Login):
+# 1. Request OTP (purpose: "login")
+# 2. Check console for 6-digit code
+# 3. Authenticate with OTP
+# 4. Logged in!
+
+# ⚡ BENEFITS:
+# ✅ No passwords to remember
+# ✅ Faster login on mobile
+# ✅ More secure (no password leaks)
+# ✅ Modern UX (like WhatsApp)
+# ✅ One flow for login & registration
+
+# 🔐 TOKENS:
+# - Access Token: 15 minutes (for API calls)
+# - Refresh Token: 60 days (auto-renewal)
+# - OTP: 10 minutes validity
+
+###
