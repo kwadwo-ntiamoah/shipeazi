@@ -60,14 +60,10 @@ namespace Shipeazi.Application.src.Commands
                     return Error.NotFound(description: "User not found");
                 }
 
-                // Check if profile is complete
-                var isProfileComplete = user.IsProfileComplete();
-
                 // Generate new access token (15 minutes)
                 var (accessToken, accessTokenExpiresAt) = jwtTokenService.GenerateAccessToken(
                     userId: user.Id.ToString(),
-                    phoneNumber: user.Phone.Value,
-                    isProfileComplete: isProfileComplete
+                    phoneNumber: user.Phone
                 );
 
                 // Generate new refresh token and revoke the old one (rotation for security)
@@ -93,7 +89,6 @@ namespace Shipeazi.Application.src.Commands
                     AccessTokenExpiresAt = accessTokenExpiresAt,
                     RefreshToken = newRefreshTokenString,
                     RefreshTokenExpiresAt = newRefreshTokenExpiresAt,
-                    IsProfileComplete = isProfileComplete,
                     UserId = user.Id.ToString()
                 };
             }

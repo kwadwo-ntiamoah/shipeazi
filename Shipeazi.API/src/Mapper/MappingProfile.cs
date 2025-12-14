@@ -15,11 +15,7 @@ namespace Shipeazi.API.src.Mapper
             CreateMap<AppUser, User>()
                 .ConstructUsing(appUser => User.Load(
                     Guid.Parse(appUser.Id),
-                    appUser.Phone,
-                    appUser.Email,
-                    appUser.DisplayName,
-                    appUser.Address,
-                    appUser.ShipeaziAddress
+                    appUser.PhoneNumber!
                 ));
 
             // Authenticate (unified login/register with OTP)
@@ -30,9 +26,6 @@ namespace Shipeazi.API.src.Mapper
             
             CreateMap<RefreshTokenRequest, RefreshTokenCommand>();
             CreateMap<RefreshTokenResult, RefreshTokenResponse>();
-
-            CreateMap<CompleteProfileRequest, CompleteProfileCommand>();
-            CreateMap<CompleteProfileResult, CompleteProfileResponse>();
 
             CreateMap<RequestOtpRequest, RequestOtpCommand>();
             CreateMap<RequestOtpResult, RequestOtpResponse>();

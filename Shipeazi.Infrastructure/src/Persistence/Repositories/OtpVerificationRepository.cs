@@ -5,18 +5,11 @@ using Shipeazi.Infrastructure.src.Persistence;
 
 namespace Shipeazi.Infrastructure.src.Persistence.Repositories
 {
-    public class OtpVerificationRepository : IOtpVerificationRepository
+    public class OtpVerificationRepository(AppDbContext context) : IOtpVerificationRepository
     {
-        private readonly AppDbContext _context;
-
-        public OtpVerificationRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<OtpVerification?> GetLatestByPhoneAsync(string phoneNumber, string countryCode, string purpose)
         {
-            return await _context.OtpVerifications
+            return await context.OtpVerifications
                 .Where(o => o.PhoneNumber == phoneNumber 
                        && o.CountryCode == countryCode 
                        && o.Purpose == purpose)
@@ -26,24 +19,24 @@ namespace Shipeazi.Infrastructure.src.Persistence.Repositories
 
         public async Task<OtpVerification?> GetByIdAsync(Guid id)
         {
-            return await _context.OtpVerifications.FindAsync(id);
+            return await context.OtpVerifications.FindAsync(id);
         }
 
         public async Task AddAsync(OtpVerification otp)
         {
-            await _context.OtpVerifications.AddAsync(otp);
-            await _context.SaveChangesAsync();
+            await context.OtpVerifications.AddAsync(otp);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(OtpVerification otp)
         {
-            _context.OtpVerifications.Update(otp);
-            await _context.SaveChangesAsync();
+            context.OtpVerifications.Update(otp);
+            await context.SaveChangesAsync();
         }
 
         public async Task<bool> HasValidOtpAsync(string phoneNumber, string countryCode, string purpose)
         {
-            return await _context.OtpVerifications
+            return await context.OtpVerifications
                 .AnyAsync(o => o.PhoneNumber == phoneNumber 
                           && o.CountryCode == countryCode 
                           && o.Purpose == purpose

@@ -3,18 +3,11 @@ using Shipeazi.Application.src.Services;
 
 namespace Shipeazi.Infrastructure.src.Services
 {
-    public class HttpContextService : IHttpContextService
+    public class HttpContextService(IHttpContextAccessor httpContextAccessor) : IHttpContextService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public HttpContextService(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
         public string GetClientIpAddress()
         {
-            var context = _httpContextAccessor.HttpContext;
+            var context = httpContextAccessor.HttpContext;
             if (context == null) return "unknown";
 
             // Check for forwarded IP first (if behind a proxy)

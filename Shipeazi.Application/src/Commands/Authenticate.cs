@@ -21,7 +21,6 @@ namespace Shipeazi.Application.src.Commands
         public DateTime AccessTokenExpiresAt { get; set; }
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime RefreshTokenExpiresAt { get; set; }
-        public bool IsProfileComplete { get; set; }
         public string UserId { get; set; } = string.Empty;
         public bool IsNewUser { get; set; } // true for registration, false for login
     }
@@ -92,7 +91,7 @@ namespace Shipeazi.Application.src.Commands
                 {
                     // Registration: Create new user
                     user = new User(
-                        phone: new(countryCode: request.CountryCode, value: request.PhoneNumber)
+                        phone: $"{request.CountryCode}{request.PhoneNumber}"
                     );
 
                     await userRepository.AddAsync(user);
@@ -108,8 +107,7 @@ namespace Shipeazi.Application.src.Commands
                 // Generate access token (15 minutes)
                 var (accessToken, accessTokenExpiresAt) = jwtTokenService.GenerateAccessToken(
                     userId: user.Id.ToString(),
-                    phoneNumber: user.Phone.Value,
-                    isProfileComplete: user.IsProfileComplete()
+                    phoneNumber: user.Phone
                 );
 
                 // Generate refresh token (60 days)
@@ -132,7 +130,6 @@ namespace Shipeazi.Application.src.Commands
                     AccessTokenExpiresAt = accessTokenExpiresAt,
                     RefreshToken = refreshTokenString,
                     RefreshTokenExpiresAt = refreshTokenExpiresAt,
-                    IsProfileComplete = user.IsProfileComplete(),
                     UserId = user.Id.ToString(),
                     IsNewUser = isNewUser
                 };

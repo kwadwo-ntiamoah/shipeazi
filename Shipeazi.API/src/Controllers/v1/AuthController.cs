@@ -65,33 +65,5 @@ namespace Shipeazi.API.src.Controllers.v1
                 errors => ToProblem(errors)
             );
         }
-
-        [Authorize]
-        [HttpPost("profile/complete"), MapToApiVersion("1.0")]
-        [ProducesResponseType(typeof(CompleteProfileResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        [EndpointSummary("Complete user profile")]
-        [EndpointDescription("Allows an authenticated user to complete their profile by providing additional information such as display name, address, and other personal details. Requires a valid access token.")]
-        [Tags("Authentication")]
-        public async Task<IActionResult> CompleteProfile([FromBody] CompleteProfileRequest request, CancellationToken cancellationToken)
-        {
-            var userId = GetAuthenticatedUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return UnauthorizedUserNotFound();
-            }
-
-            var command = mapper.Map<CompleteProfileCommand>(request);
-            command.UserId = userId;
-
-            var result = await mediator.Send(command, cancellationToken);
-
-            return result.Match(
-                success => Ok(mapper.Map<CompleteProfileResponse>(result.Value)),
-                errors => ToProblem(errors)
-            );
-        }
     }
 }

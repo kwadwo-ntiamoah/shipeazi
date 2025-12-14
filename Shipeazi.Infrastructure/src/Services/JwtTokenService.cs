@@ -8,34 +8,26 @@ using Shipeazi.Application.src.Services;
 
 namespace Shipeazi.Infrastructure.src.Services
 {
-    public class JwtTokenService : IJwtTokenService
+    public class JwtTokenService(IConfiguration configuration) : IJwtTokenService
     {
-        private readonly IConfiguration _configuration;
-
-        public JwtTokenService(IConfiguration configuration)
+        public (string AccessToken, DateTime AccessTokenExpiresAt) GenerateAccessToken(string userId, string phoneNumber)
         {
-            _configuration = configuration;
-        }
-
-        public (string AccessToken, DateTime AccessTokenExpiresAt) GenerateAccessToken(string userId, string phoneNumber, bool isProfileComplete)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("phone", phoneNumber),
-                new Claim("profileComplete", isProfileComplete.ToString())
+                new Claim("phone", phoneNumber)
             };
 
             // Short-lived access token (15 minutes)
             var expiresAt = DateTime.UtcNow.AddMinutes(15);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
+                issuer: configuration["JwtSettings:Issuer"],
+                audience: configuration["JwtSettings:Audience"],
                 claims: claims,
                 expires: expiresAt,
                 signingCredentials: credentials

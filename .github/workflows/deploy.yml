@@ -44,6 +44,16 @@ jobs:
         source: "publish/*"
         target: ${{ secrets.APP_PATH }}
 
+    - name: Run Database Migrations
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ${{ secrets.APP_PATH }}/publish
+          dotnet ef database update --project Shipeazi.Infrastructure.dll --startup-project Shipeazi.API.dll || echo "Migration failed, check logs"
+
     - name: Restart API
       uses: appleboy/ssh-action@v1.0.3
       with:

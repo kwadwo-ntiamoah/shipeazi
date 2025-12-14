@@ -5,24 +5,17 @@ using Shipeazi.Infrastructure.src.Persistence;
 
 namespace Shipeazi.Infrastructure.src.Persistence.Repositories
 {
-    public class RefreshTokenRepository : IRefreshTokenRepository
+    public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenRepository
     {
-        private readonly AppDbContext _context;
-
-        public RefreshTokenRepository(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<RefreshToken?> GetByTokenAsync(string token)
         {
-            return await _context.RefreshTokens
+            return await context.RefreshTokens
                 .FirstOrDefaultAsync(rt => rt.Token == token);
         }
 
         public async Task<List<RefreshToken>> GetActiveTokensByUserIdAsync(string userId)
         {
-            return await _context.RefreshTokens
+            return await context.RefreshTokens
                 .Where(rt => rt.UserId == userId && rt.RevokedAt == null && rt.ExpiresAt > DateTime.UtcNow)
                 .OrderByDescending(rt => rt.CreatedAt)
                 .ToListAsync();
@@ -30,19 +23,19 @@ namespace Shipeazi.Infrastructure.src.Persistence.Repositories
 
         public async Task AddAsync(RefreshToken refreshToken)
         {
-            await _context.RefreshTokens.AddAsync(refreshToken);
-            await _context.SaveChangesAsync();
+            await context.RefreshTokens.AddAsync(refreshToken);
+            await context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(RefreshToken refreshToken)
         {
-            _context.RefreshTokens.Update(refreshToken);
-            await _context.SaveChangesAsync();
+            context.RefreshTokens.Update(refreshToken);
+            await context.SaveChangesAsync();
         }
 
         public async Task RevokeAllUserTokensAsync(string userId, string revokedByIp)
         {
-            var tokens = await _context.RefreshTokens
+            var tokens = await context.RefreshTokens
                 .Where(rt => rt.UserId == userId && rt.RevokedAt == null)
                 .ToListAsync();
 
@@ -51,7 +44,7 @@ namespace Shipeazi.Infrastructure.src.Persistence.Repositories
                 token.Revoke(revokedByIp);
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }

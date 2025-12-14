@@ -3,23 +3,16 @@ using Shipeazi.Application.src.Services;
 
 namespace Shipeazi.Infrastructure.src.Services
 {
-    public class SmsService : ISmsService
+    public class SmsService(ILogger<SmsService> logger) : ISmsService
     {
-        private readonly ILogger<SmsService> _logger;
-
-        public SmsService(ILogger<SmsService> logger)
-        {
-            _logger = logger;
-        }
-
         public async Task<bool> SendOtpAsync(string phoneNumber, string countryCode, string otpCode)
         {
             // TODO: Integrate with actual SMS provider (Twilio, AWS SNS, Africa's Talking, etc.)
             // For now, just log the OTP (ONLY FOR DEVELOPMENT!)
             
-            _logger.LogInformation("========================================");
-            _logger.LogInformation("OTP Code for {CountryCode}{PhoneNumber}: {OtpCode}", countryCode, phoneNumber, otpCode);
-            _logger.LogInformation("========================================");
+            logger.LogInformation("========================================");
+            logger.LogInformation("OTP Code for {CountryCode}{PhoneNumber}: {OtpCode}", countryCode, phoneNumber, otpCode);
+            logger.LogInformation("========================================");
 
             // Simulate sending SMS
             await Task.Delay(100);
